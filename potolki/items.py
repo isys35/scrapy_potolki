@@ -1,12 +1,14 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class PotolkiItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class PotolokItem(scrapy.Item):
+    sku = scrapy.Field()
+    category_1 = scrapy.Field()
+    category_1_1 = scrapy.Field()
+    tage = scrapy.Field()
+    name = scrapy.Field()
+    price = scrapy.Field()
+    valute = scrapy.Field()
+    images = scrapy.Field()
+    brand = scrapy.Field()
+    description = scrapy.Field()

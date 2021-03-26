@@ -1,4 +1,5 @@
 import scrapy
+from potolki.items import PotolokItem
 
 
 class PotolkiSpiderSpider(scrapy.Spider):
@@ -9,21 +10,25 @@ class PotolkiSpiderSpider(scrapy.Spider):
 
     def parse(self, response):
         for href in response.css('li.name a::attr(href)').getall():
-            yield scrapy.Request(self.host+href, callback=self.parse_category)
+            yield scrapy.Request(self.host + href, callback=self.parse_category)
 
     def parse_category(self, response):
         for href in response.css('div.catalog_item_wrapp a::attr(href)').getall():
             yield scrapy.Request(self.host + href, callback=self.parse_product)
 
     def parse_product(self, response):
-        sku = None
-        category_1 = response.css('#bx_breadcrumb_2 a span::text').get()
-        category_1_1 = response.css('#bx_breadcrumb_3 a span::text').get()
-        tage = None
-        name = response.css('h1::text').get()
-        price = response.css('div.cost.prices.clearfix .price::text').get().replace(' руб.', '').strip()
-        valute = 'руб.'
+        item = PotolokItem()
+        item['sku'] = None
+        item['category_1'] = response.css('#bx_breadcrumb_2 a span::text').get()
+        item['category_1_1'] = response.css('#bx_breadcrumb_3 a span::text').get()
+        item['tage'] = None
+        item['name'] = response.css('h1::text').get()
+        price = response.css('div.cost.prices.clearfix .price::text').get()
+        if price:
+            item['price'] = price.replace(' руб.', '').strip()
+        item['valute'] = 'руб.'
         images = [self.host + href for href in response.css('a.fancy::attr(href)').getall()]
-        images = '\n'.join(images)
-        brand = response.css('.brand_picture img::attr(title)').get()
-        description = response.css('.detail_text').get()
+        item['images'] = '\n'.join(images)
+        item['brand'] = response.css('.brand_picture img::attr(title)').get()
+        item['description'] = response.css('.detail_text').get()
+        yield item
